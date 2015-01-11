@@ -63,6 +63,8 @@ public class Bluetooth {
                     mHandler.obtainMessage(START_DISCOVYERY).sendToTarget();
                 } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
                     disconnected();
+                } else if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
+                    connected();
                 }
             }
         };
@@ -71,6 +73,7 @@ public class Bluetooth {
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+        filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
         mContext.registerReceiver(mReceiver, filter);
     }
 
@@ -162,8 +165,11 @@ public class Bluetooth {
     private void handleConnectedThread(BluetoothSocket socket) {
         mConnectedThread = new ConnectedThread(socket);
         mConnectedThread.start();
-        mHandler.obtainMessage(CONNECTED).sendToTarget();
+    }
+
+    private void connected() {
         mState = BluetoothState.CONNECTED;
+        mHandler.obtainMessage(CONNECTED).sendToTarget();
     }
 
     private void connectionFailed() {
